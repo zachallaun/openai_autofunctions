@@ -4,7 +4,7 @@
 Mix.install([
   :req,
   :jason,
-  :kin
+  :kino
 ])
 ```
 
@@ -181,6 +181,8 @@ defmodule Chat.Message do
           mfa: {module(), atom(), [term()]} | nil
         }
 
+  def assistant(json, mod \\ nil)
+
   def assistant(%{function_call: %{} = fun_call}, mod) do
     %__MODULE__{
       role: :assistant,
@@ -222,7 +224,7 @@ defmodule Chat do
   alias Chat.Message
 
   @system_message """
-  You are a helpful assistant. Be concise in all replies.\
+  You are a helpful assistant. Be concise in all replies.
   """
 
   defstruct [
@@ -279,6 +281,38 @@ defmodule Chat do
     end
   end
 
+  def render(%Chat{messages: messages} = chat) do
+    rendered_chat =
+      messages
+      |> Enum.reverse()
+      |> Enum.map(fn
+        %{role: :assistant, mfa: {_, _, _} = mfa} ->
+          """
+
+          **assistant [function call]:** #{inspect(mfa)}
+          """
+
+        %{role: :function, content: content} ->
+          """
+
+          **function:** #{inspect(content)}
+          """
+
+        %{role: role, content: content} when is_binary(content) ->
+          """
+
+          **#{role}:** #{String.trim(content)}
+          """
+      end)
+      |> Enum.join("")
+      |> Kino.Markdown.new()
+
+    Kino.Layout.tabs(
+      Chat: rendered_chat,
+      Raw: chat
+    )
+  end
+
   defp req do
     Req.new(
       base_url: "https://api.openai.com",
@@ -288,11 +322,11 @@ defmodule Chat do
 end
 ```
 
-## Example 1
-
 ```elixir
 alias Chat.Message
 ```
+
+## Example 1
 
 ```elixir
 defmodule ExampleModule do
@@ -312,6 +346,7 @@ end
 
 ```elixir
 chat = Chat.new(ExampleModule)
+Chat.render(chat)
 ```
 
 ```elixir
@@ -327,71 +362,20 @@ chat =
     })
   )
   |> Chat.send!()
+
+Chat.render(chat)
 ```
 
 ```elixir
 chat = Chat.run_function(chat)
-```
 
-```elixir
-chat.messages |> Enum.map(&Message.to_json/1)
+Chat.render(chat)
 ```
 
 ```elixir
 chat = Chat.send!(chat)
+
+Chat.render(chat)
 ```
 
-```elixir
-Autofunctions.get_functions(ExampleModule)
-```
-
-```elixir
-resp =
-  Req.post!(req,
-    url: "/v1/chat/completions",
-    json: %{
-      model: model,
-      messages: [
-        %{role: "system", content: "You are a helpful assistant. Be concise in all replies."},
-        %{
-          role: "user",
-          content:
-            ~S|Can you please carefully duplicate the following string as many times as there are letters in the string? "foobar"|
-        }
-      ],
-      functions: Autofunctions.get_functions(ExampleModule)
-    }
-  )
-
-%{"choices" => [%{"message" => %{"function_call" => fun_call}}]} = resp.body
-```
-
-```elixir
-Autofunctions.get_response(ExampleModule, fun_call)
-```
-
-```elixir
-resp =
-  Req.post!(req,
-    url: "/v1/chat/completions",
-    json: %{
-      model: model,
-      messages: [
-        %{role: "system", content: "You are a helpful assistant. Be concise in all replies."},
-        %{
-          role: "user",
-          content:
-            ~S|Can you please carefully duplicate the following string as many times as there are letters in the string? "foobar"|
-        },
-        %{
-          content: "foobarfoobarfoobarfoobarfoobarfoobar",
-          name: "2__dup_string",
-          role: "function"
-        }
-      ],
-      functions: Autofunctions.get_functions(ExampleModule)
-    }
-  )
-```
-
-<!-- livebook:{"offset":8819,"stamp":{"token":"QTEyOEdDTQ.FTfmk056PmnXrK8AQED-36_ZSMXO6g0mYADZ3oRojuDUVZ8dTxlLUvZvcS4.tbZA5vc_qFJUU45R.XrWBLgAcpJ04Hbt_6KcK1CBNPM1MPtPVsZwtourAjzEskkqU-avFW0L5rwMoRmf2xwa8EHQ.Wl509mugPFl1HKsh6eY8Fw","version":1}} -->
+<!-- livebook:{"offset":8217,"stamp":{"token":"QTEyOEdDTQ.OgzG8MP63mms9WDBjsyiLX0fB6wdVK1MBU5LhJkm-iiuI_jdH95aGO4v3xg.foXr2zgv1ZpDfRpN.-WeHWa90jNgpvI7zzkvuxErJJ2nz0FFYNX25J0BVIYO9EmB2_QdnOkNaEuNT8abAp_8_f4o.muULDzckbai72-Sk0uR14Q","version":1}} -->
