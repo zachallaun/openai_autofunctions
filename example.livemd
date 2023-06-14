@@ -1,0 +1,99 @@
+<!-- livebook:{"persist_outputs":true} -->
+
+# Autofunctions example
+
+```elixir
+Mix.install([
+  :kino,
+  {:autofunctions, path: "./"}
+])
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+==> autofunctions
+Compiling 1 file (.ex)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:ok
+```
+
+## A basic example
+
+```elixir
+defmodule ExampleModule do
+  use Autofunctions
+
+  @doc """
+  Duplicates a string.
+  """
+  @spec dup_string(string :: binary(), num_times :: pos_integer()) :: binary()
+  def dup_string(string, n \\ 1) do
+    String.duplicate(string, n)
+  end
+end
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+{:module, ExampleModule, <<70, 79, 82, 49, 0, 0, 7, ...>>, {:dup_string, 2}}
+```
+
+```elixir
+alias Autofunctions.Chat
+alias Autofunctions.Chat.Message
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+Autofunctions.Chat.Message
+```
+
+```elixir
+chat = Chat.new(ExampleModule)
+```
+
+```elixir
+chat =
+  chat
+  |> Chat.user_message("""
+  I'm going to give you some strings and you should precisely duplicate them \
+  the same number of times as there are characters in the string.
+
+  Here's the first one:
+
+  foobar
+  """)
+  |> Chat.send!()
+```
+
+```elixir
+chat =
+  chat
+  |> Chat.run_function()
+  |> Chat.send!()
+```
+
+```elixir
+chat =
+  chat
+  |> Chat.user_message("""
+  "another string"
+  """)
+  |> Chat.send!()
+```
+
+```elixir
+chat =
+  chat
+  |> Chat.run_function()
+  |> Chat.send!()
+```
+
+<!-- livebook:{"offset":1369,"stamp":{"token":"QTEyOEdDTQ.1p_3mMnICRawvle7XcFO8iWhenGqivh6raLcmgtHOlfIjH9kkLjwl3L3wNQ.jzf7OqTFZdMTeVUY.lCuA7v92T0cjb69mbFJx17ZsKCVMNkROKf_vKFBSKjDuE6DyVm8cLlJTP63tUxnnSJA.Zy9ULVijdh90lJQplcBBfg","version":1}} -->
