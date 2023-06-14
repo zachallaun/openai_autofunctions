@@ -1,5 +1,3 @@
-<!-- livebook:{"persist_outputs":true} -->
-
 # Autofunctions example
 
 ```elixir
@@ -7,19 +5,6 @@ Mix.install([
   :kino,
   {:autofunctions, path: "./"}
 ])
-```
-
-<!-- livebook:{"output":true} -->
-
-```
-==> autofunctions
-Compiling 1 file (.ex)
-```
-
-<!-- livebook:{"output":true} -->
-
-```
-:ok
 ```
 
 ## A basic example
@@ -38,21 +23,9 @@ defmodule ExampleModule do
 end
 ```
 
-<!-- livebook:{"output":true} -->
-
-```
-{:module, ExampleModule, <<70, 79, 82, 49, 0, 0, 7, ...>>, {:dup_string, 2}}
-```
-
 ```elixir
 alias Autofunctions.Chat
 alias Autofunctions.Chat.Message
-```
-
-<!-- livebook:{"output":true} -->
-
-```
-Autofunctions.Chat.Message
 ```
 
 ```elixir
@@ -96,4 +69,4 @@ chat =
   |> Chat.send!()
 ```
 
-<!-- livebook:{"offset":1369,"stamp":{"token":"QTEyOEdDTQ.1p_3mMnICRawvle7XcFO8iWhenGqivh6raLcmgtHOlfIjH9kkLjwl3L3wNQ.jzf7OqTFZdMTeVUY.lCuA7v92T0cjb69mbFJx17ZsKCVMNkROKf_vKFBSKjDuE6DyVm8cLlJTP63tUxnnSJA.Zy9ULVijdh90lJQplcBBfg","version":1}} -->
+<!-- livebook:{"offset":1000,"stamp":{"token":"QTEyOEdDTQ.3gpL7jMDZ98Z3NNLt2ide3DiJxdN9cA_fdR3qBEI6U9V9vOai7R24IPc2TU.s3CU0xTG-qPlN2ty.dYIiwrjBv1X53al9gkHNmnO6z8O4g6HjjCToxJq4gI5qo2RyYZdfNhcSlVLR7Kyfjvo.HX5lb2EYbiAAkF57T6GAjQ","version":1}} -->
